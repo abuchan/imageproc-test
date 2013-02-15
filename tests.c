@@ -77,26 +77,10 @@ volatile Queue fun_queue;
 unsigned char test_radio(unsigned char type, unsigned char status,\
                          unsigned char length, unsigned char* data)
 {
-    MacPacket packet;
-    Payload pld;
+    radioSendData (RADIO_DEST_ADDR, status, type,
+                        length, data, RADIO_DATA_SAFE);
 
-    // Get a new packet from the pool
-    packet = radioRequestPacket(length);
-    if(packet == NULL) return 0;
-    macSetDestAddr(packet, RADIO_DEST_ADDR);
-
-    // Prepare the payload
-    pld = packet->payload;
-    paySetType(pld, type);
-    paySetStatus(pld, status);
-    paySetData(pld, length, data);
-
-    // Enqueue the packet for broadcast
-    while(!radioEnqueueTxPacket(packet));
-
-    // Return the packet
-    radioReturnPacket(packet);
-
+    // TODO (fgb) : We should be returning 0 for success
     return 1; //success
 }
 
